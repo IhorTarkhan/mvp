@@ -4,7 +4,7 @@ import com.opencsv.bean.CsvBindByPosition;
 import lombok.Data;
 
 @Data
-public class BasketballGame {
+public class HandballPlayerStatistic {
   @CsvBindByPosition(position = 0)
   private String playerName;
 
@@ -18,11 +18,8 @@ public class BasketballGame {
   private String teamName;
 
   @CsvBindByPosition(position = 4)
-  private Long scoredPoints;
+  private Long goalsMade;
 
   @CsvBindByPosition(position = 5)
-  private Long rebounds;
-
-  @CsvBindByPosition(position = 6)
-  private Long assists;
+  private Long goalsReceived;
 }
