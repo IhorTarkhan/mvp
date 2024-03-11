@@ -2,9 +2,10 @@ package org.example.mvp.bean;
 
 import com.opencsv.bean.CsvBindByPosition;
 import lombok.Data;
+import org.example.mvp.calculator.PlayerStatistic;
 
 @Data
-public class HandballPlayerStatistic {
+public class HandballPlayerStatistic implements PlayerStatistic {
   @CsvBindByPosition(position = 0)
   private String playerName;
 
