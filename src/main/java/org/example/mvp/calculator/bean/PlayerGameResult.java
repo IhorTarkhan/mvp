@@ -1,4 +1,4 @@
-package org.example.mvp.bean;
+package org.example.mvp.calculator.bean;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

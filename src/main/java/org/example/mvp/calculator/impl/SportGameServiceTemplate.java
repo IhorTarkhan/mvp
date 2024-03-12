@@ -8,12 +8,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.example.mvp.Sport;
-import org.example.mvp.bean.PlayerGameResult;
-import org.example.mvp.calculator.PlayerStatistic;
-import org.example.mvp.calculator.SportResultCalculator;
+import org.example.mvp.calculator.Sport;
+import org.example.mvp.calculator.bean.PlayerGameResult;
+import org.example.mvp.calculator.SportGameService;
 
-public abstract class AbstractResultCalculator<BEAN extends PlayerStatistic> implements SportResultCalculator {
+public abstract class SportGameServiceTemplate<BEAN extends PlayerStatisticBean> implements SportGameService {
   public List<PlayerGameResult> calculate(Reader reader) {
     var game = getPlayersStatistic(reader);
     var winnerTeam = getWinnerTeam(game);
@@ -33,7 +32,7 @@ public abstract class AbstractResultCalculator<BEAN extends PlayerStatistic> imp
         game.stream()
             .collect(
                 Collectors.toMap(
-                    PlayerStatistic::getTeamName, this::getTeamRatingScore, Long::sum));
+                    PlayerStatisticBean::getTeamName, this::getTeamRatingScore, Long::sum));
     return Collections.max(teamsScoreByName.entrySet(), comparingByValue()).getKey();
   }
 

@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.example.mvp.bean.PlayerGameResult;
-import org.example.mvp.calculator.ResultCalculator;
+import org.example.mvp.calculator.bean.PlayerGameResult;
+import org.example.mvp.calculator.GameService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Component
 @RequiredArgsConstructor
 public class Main {
-  private final ResultCalculator resultCalculator;
+  private final GameService gameService;
 
   @SneakyThrows
   @EventListener(ApplicationReadyEvent.class)
@@ -27,8 +27,7 @@ public class Main {
 
   private List<PlayerGameResult> parseBasketballGave(Path path) throws IOException {
     try (BufferedReader reader = Files.newBufferedReader(path)) {
-      Sport sportType = Sport.valueOf(reader.readLine());
-      return resultCalculator.calculate(sportType, reader);
+      return gameService.process(reader);
     }
   }
 }
