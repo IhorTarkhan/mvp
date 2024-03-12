@@ -5,5 +5,7 @@ public interface PlayerStatisticBean {
 
   String getNickname();
 
+  Long getNumber();
+
   String getTeamName();
 }

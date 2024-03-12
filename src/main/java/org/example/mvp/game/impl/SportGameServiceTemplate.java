@@ -50,6 +50,7 @@ public abstract class SportGameServiceTemplate<BEAN extends PlayerStatisticBean>
                 new PlayerGameResult(
                     stat.getNickname(),
                     stat.getPlayerName(),
+                    stat.getNumber(),
                     getPayerRatingScore(stat),
                     winnerTeam.equals(stat.getTeamName())))
         .toList();
@@ -64,6 +65,7 @@ public abstract class SportGameServiceTemplate<BEAN extends PlayerStatisticBean>
         bean -> {
           if (bean.getPlayerName() == null
               || bean.getNickname() == null
+              || bean.getNumber() == null
               || bean.getTeamName() == null) {
             throw new InvalidGameFormatException();
           }

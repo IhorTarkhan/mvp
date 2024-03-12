@@ -8,6 +8,7 @@ import lombok.Data;
 public class PlayerGameResult {
   private String nickname;
   private String name;
+  private Long number;
   private Long score;
   private boolean hasTeamWon;
 }

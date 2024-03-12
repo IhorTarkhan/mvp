@@ -33,12 +33,12 @@ class BasketballGameServiceTest {
     List<PlayerGameResult> actualResult;
     List<PlayerGameResult> expectedResult =
         List.of(
-            new PlayerGameResult("nick1", "player 1", 29L, false),
-            new PlayerGameResult("nick2", "player 2", 10L, false),
-            new PlayerGameResult("nick3", "player 3", 44L, false),
-            new PlayerGameResult("nick4", "player 4", 40L, true),
-            new PlayerGameResult("nick5", "player 5", 22L, true),
-            new PlayerGameResult("nick6", "player 6", 26L, true));
+            new PlayerGameResult("nick1", "player 1", 4L, 29L, false),
+            new PlayerGameResult("nick2", "player 2", 8L, 10L, false),
+            new PlayerGameResult("nick3", "player 3", 15L, 44L, false),
+            new PlayerGameResult("nick4", "player 4", 16L, 40L, true),
+            new PlayerGameResult("nick5", "player 5", 23L, 22L, true),
+            new PlayerGameResult("nick6", "player 6", 42L, 26L, true));
 
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
