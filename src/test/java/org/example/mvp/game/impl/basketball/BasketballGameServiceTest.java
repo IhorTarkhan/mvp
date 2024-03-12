@@ -17,7 +17,7 @@ import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class BasketballGameServiceTest {
-  @InjectMocks private BasketballGameService basketballResultCalculator;
+  @InjectMocks BasketballGameService basketballResultCalculator;
 
   @BeforeEach
   void setUp() {}
