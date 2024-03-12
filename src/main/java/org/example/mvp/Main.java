@@ -7,8 +7,8 @@ import java.nio.file.Path;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.example.mvp.calculator.bean.PlayerGameResult;
-import org.example.mvp.calculator.GameService;
+import org.example.mvp.game.bean.PlayerGameResult;
+import org.example.mvp.game.GameService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -21,7 +21,7 @@ public class Main {
   @SneakyThrows
   @EventListener(ApplicationReadyEvent.class)
   public void run() {
-    var playerGameResults = parseBasketballGave(Path.of("src/main/resources/set/game1.csv"));
+    var playerGameResults = parseBasketballGave(Path.of("src/test/resources/set/basketball/invalid_game_format_5.csv"));
     System.out.println();
   }
 

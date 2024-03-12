@@ -1,6 +1,6 @@
-package org.example.mvp.calculator;
+package org.example.mvp.game;
 
-import org.example.mvp.calculator.bean.PlayerGameResult;
+import org.example.mvp.game.bean.PlayerGameResult;
 
 import java.io.Reader;
 import java.util.List;

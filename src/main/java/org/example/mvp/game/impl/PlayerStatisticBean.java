@@ -1,4 +1,4 @@
-package org.example.mvp.calculator.impl;
+package org.example.mvp.game.impl;
 
 public interface PlayerStatisticBean {
   String getPlayerName();

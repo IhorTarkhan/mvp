@@ -1,8 +1,8 @@
-package org.example.mvp.calculator;
+package org.example.mvp.game;
 
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.example.mvp.calculator.bean.PlayerGameResult;
+import org.example.mvp.game.bean.PlayerGameResult;
 import org.springframework.stereotype.Service;
 
 import java.io.BufferedReader;

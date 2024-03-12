@@ -1,4 +1,4 @@
-package org.example.mvp.calculator.impl;
+package org.example.mvp.game.impl;
 
 import static java.util.Map.Entry.comparingByValue;
 
@@ -8,23 +8,30 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-import org.example.mvp.calculator.Sport;
-import org.example.mvp.calculator.bean.PlayerGameResult;
-import org.example.mvp.calculator.SportGameService;
+import org.example.mvp.game.Sport;
+import org.example.mvp.game.SportGameService;
+import org.example.mvp.game.bean.PlayerGameResult;
+import org.example.mvp.game.exception.InvalidGameFormatException;
 
-public abstract class SportGameServiceTemplate<BEAN extends PlayerStatisticBean> implements SportGameService {
+public abstract class SportGameServiceTemplate<BEAN extends PlayerStatisticBean>
+    implements SportGameService {
   public List<PlayerGameResult> calculate(Reader reader) {
     var game = getPlayersStatistic(reader);
+    validate(game);
     var winnerTeam = getWinnerTeam(game);
     return getPlayersGameResult(game, winnerTeam);
   }
 
   private List<BEAN> getPlayersStatistic(Reader reader) {
-    return new CsvToBeanBuilder<BEAN>(reader)
-        .withType(getBeanClass())
-        .withSeparator(';')
-        .build()
-        .parse();
+    try {
+      return new CsvToBeanBuilder<BEAN>(reader)
+          .withType(getBeanClass())
+          .withSeparator(';')
+          .build()
+          .parse();
+    } catch (RuntimeException e) {
+      throw new InvalidGameFormatException(e);
+    }
   }
 
   private String getWinnerTeam(List<BEAN> game) {
@@ -51,6 +58,17 @@ public abstract class SportGameServiceTemplate<BEAN extends PlayerStatisticBean>
   public abstract Sport getSport();
 
   protected abstract Class<BEAN> getBeanClass();
+
+  protected void validate(List<BEAN> beans) {
+    beans.forEach(
+        bean -> {
+          if (bean.getPlayerName() == null
+              || bean.getNickname() == null
+              || bean.getTeamName() == null) {
+            throw new InvalidGameFormatException();
+          }
+        });
+  }
 
   protected abstract Long getPayerRatingScore(BEAN bean);
 

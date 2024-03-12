@@ -1,8 +1,8 @@
-package org.example.mvp.calculator.impl.handball;
+package org.example.mvp.game.impl.handball;
 
 import com.opencsv.bean.CsvBindByPosition;
 import lombok.Data;
-import org.example.mvp.calculator.impl.PlayerStatisticBean;
+import org.example.mvp.game.impl.PlayerStatisticBean;
 
 @Data
 public class HandballPlayerStatisticBean implements PlayerStatisticBean {

@@ -1,8 +1,8 @@
-package org.example.mvp.calculator.impl.basketball;
+package org.example.mvp.game.impl.basketball;
 
-import org.example.mvp.calculator.Sport;
-import org.example.mvp.calculator.impl.SportGameServiceTemplate;
-import org.example.mvp.calculator.SportGameService;
+import org.example.mvp.game.Sport;
+import org.example.mvp.game.impl.SportGameServiceTemplate;
+import org.example.mvp.game.SportGameService;
 import org.springframework.stereotype.Service;
 
 @Service

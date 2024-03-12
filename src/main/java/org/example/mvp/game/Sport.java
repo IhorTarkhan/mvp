@@ -1,4 +1,4 @@
-package org.example.mvp.calculator;
+package org.example.mvp.game;
 
 public enum Sport {
   BASKETBALL,
