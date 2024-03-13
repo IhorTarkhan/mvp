@@ -1,14 +1,15 @@
 package org.example.mvp;
 
-import java.io.BufferedReader;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
+import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import lombok.SneakyThrows;
-import org.example.mvp.game.bean.PlayerGameResult;
 import org.example.mvp.game.GameService;
+import org.example.mvp.game.bean.PlayerGameResult;
+import org.example.mvp.mvp.MvpService;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Component;
@@ -17,17 +18,20 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class Main {
   private final GameService gameService;
+  private final MvpService mvpService;
 
-  @SneakyThrows
   @EventListener(ApplicationReadyEvent.class)
   public void run() {
-    var playerGameResults = parseBasketballGave(Path.of("src/test/resources/set/basketball/invalid_game_format_5.csv"));
-    System.out.println();
-  }
-
-  private List<PlayerGameResult> parseBasketballGave(Path path) throws IOException {
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      return gameService.process(reader);
+    try (Stream<Path> paths = Files.walk(Paths.get("src/main/resources/set/"))) {
+      List<PlayerGameResult> playerGamesResults =
+          paths
+              .filter(path -> !Files.isDirectory(path))
+              .flatMap(path -> gameService.processGame(path).stream())
+              .toList();
+      var mvpPlayer = mvpService.getMvp(playerGamesResults);
+      System.out.println(mvpPlayer);
+    } catch (IOException e) {
+      throw new RuntimeException(e); // todo
     }
   }
 }
