@@ -32,7 +32,7 @@ public class MvpService {
 
   public PlayerScoreResult sumScore(PlayerScoreResult a, PlayerScoreResult b) {
     if (!a.getName().equals(b.getName())) {
-      throw new InvalidGameSetException("Nicknames must be the same");
+      throw new InvalidGameSetException("Player name must be the same");
     }
 
     return PlayerScoreResult.builder()

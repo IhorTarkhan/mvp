@@ -4,7 +4,11 @@ import lombok.NoArgsConstructor;
 
 @NoArgsConstructor
 public class InvalidGameFormatException extends RuntimeException {
-    public InvalidGameFormatException(Throwable cause) {
-        super(cause);
-    }
+  public InvalidGameFormatException(String message) {
+    super(message);
+  }
+
+  public InvalidGameFormatException(String message, Throwable cause) {
+    super(message, cause);
+  }
 }

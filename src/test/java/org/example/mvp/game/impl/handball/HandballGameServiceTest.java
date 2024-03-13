@@ -42,7 +42,7 @@ class HandballGameServiceTest {
 
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
-      actualResult = handballGameService.calculate(reader);
+      actualResult = handballGameService.parse(reader);
     }
 
     assertEquals(expectedResult, actualResult);
@@ -55,25 +55,25 @@ class HandballGameServiceTest {
     path = Path.of("src/test/resources/set/handball/invalid_game_format_1.csv");
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
-      assertThrows(InvalidGameFormatException.class, () -> handballGameService.calculate(reader));
+      assertThrows(InvalidGameFormatException.class, () -> handballGameService.parse(reader));
     }
 
     path = Path.of("src/test/resources/set/handball/invalid_game_format_2.csv");
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
-      assertThrows(InvalidGameFormatException.class, () -> handballGameService.calculate(reader));
+      assertThrows(InvalidGameFormatException.class, () -> handballGameService.parse(reader));
     }
 
     path = Path.of("src/test/resources/set/handball/invalid_game_format_3.csv");
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
-      assertThrows(InvalidGameFormatException.class, () -> handballGameService.calculate(reader));
+      assertThrows(InvalidGameFormatException.class, () -> handballGameService.parse(reader));
     }
 
     path = Path.of("src/test/resources/set/handball/invalid_game_format_4.csv");
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
-      assertThrows(InvalidGameFormatException.class, () -> handballGameService.calculate(reader));
+      assertThrows(InvalidGameFormatException.class, () -> handballGameService.parse(reader));
     }
   }
 }

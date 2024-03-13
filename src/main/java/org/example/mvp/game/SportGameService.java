@@ -8,5 +8,5 @@ import java.util.List;
 public interface SportGameService {
   Sport getSport();
 
-  List<PlayerGameResult> calculate(Reader reader);
+  List<PlayerGameResult> parse(Reader reader);
 }

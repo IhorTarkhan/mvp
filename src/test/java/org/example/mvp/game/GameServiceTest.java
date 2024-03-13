@@ -14,13 +14,12 @@ import org.example.mvp.game.impl.basketball.BasketballGameService;
 import org.example.mvp.game.impl.handball.HandballGameService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
-import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
 
-@ExtendWith(MockitoExtension.class)
+@MockitoSettings
 class GameServiceTest {
   @Mock BasketballGameService basketballGameService;
   @Mock HandballGameService handballGameService;
@@ -39,9 +38,9 @@ class GameServiceTest {
 
     BufferedReader reader = new BufferedReader(new StringReader("BASKETBALL\n"));
 
-    gameService.process(reader);
+    gameService.parse(reader);
 
-    verify(basketballGameService, times(1)).calculate(any());
+    verify(basketballGameService, times(1)).parse(any());
   }
 
   @Test
@@ -50,15 +49,15 @@ class GameServiceTest {
 
     BufferedReader reader = new BufferedReader(new StringReader("HANDBALL\n"));
 
-    gameService.process(reader);
+    gameService.parse(reader);
 
-    verify(handballGameService, times(1)).calculate(any());
+    verify(handballGameService, times(1)).parse(any());
   }
 
   @Test
   void process_invalidFile_throwException() {
     BufferedReader reader = new BufferedReader(new StringReader("ABC\n"));
 
-    assertThrows(InvalidGameFormatException.class, () -> gameService.process(reader));
+    assertThrows(InvalidGameFormatException.class, () -> gameService.parse(reader));
   }
 }

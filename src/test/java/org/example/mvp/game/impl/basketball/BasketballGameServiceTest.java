@@ -42,7 +42,7 @@ class BasketballGameServiceTest {
 
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
-      actualResult = basketballResultCalculator.calculate(reader);
+      actualResult = basketballResultCalculator.parse(reader);
     }
 
     assertEquals(expectedResult, actualResult);
@@ -56,35 +56,35 @@ class BasketballGameServiceTest {
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
       assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate(reader));
+          InvalidGameFormatException.class, () -> basketballResultCalculator.parse(reader));
     }
 
     path = Path.of("src/test/resources/set/basketball/invalid_game_format_2.csv");
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
       assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate(reader));
+          InvalidGameFormatException.class, () -> basketballResultCalculator.parse(reader));
     }
 
     path = Path.of("src/test/resources/set/basketball/invalid_game_format_3.csv");
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
       assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate(reader));
+          InvalidGameFormatException.class, () -> basketballResultCalculator.parse(reader));
     }
 
     path = Path.of("src/test/resources/set/basketball/invalid_game_format_4.csv");
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
       assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate(reader));
+          InvalidGameFormatException.class, () -> basketballResultCalculator.parse(reader));
     }
 
     path = Path.of("src/test/resources/set/basketball/invalid_game_format_5.csv");
     try (BufferedReader reader = Files.newBufferedReader(path)) {
       reader.readLine();
       assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate(reader));
+          InvalidGameFormatException.class, () -> basketballResultCalculator.parse(reader));
     }
   }
 }
