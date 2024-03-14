@@ -38,9 +38,9 @@ class GameServiceTest {
 
     BufferedReader reader = new BufferedReader(new StringReader("BASKETBALL\n"));
 
-    gameService.parse(reader);
+    gameService.calculate(reader);
 
-    verify(basketballGameService, times(1)).parse(any());
+    verify(basketballGameService, times(1)).calculate(any());
   }
 
   @Test
@@ -49,15 +49,15 @@ class GameServiceTest {
 
     BufferedReader reader = new BufferedReader(new StringReader("HANDBALL\n"));
 
-    gameService.parse(reader);
+    gameService.calculate(reader);
 
-    verify(handballGameService, times(1)).parse(any());
+    verify(handballGameService, times(1)).calculate(any());
   }
 
   @Test
   void process_invalidFile_throwException() {
     BufferedReader reader = new BufferedReader(new StringReader("ABC\n"));
 
-    assertThrows(InvalidGameFormatException.class, () -> gameService.parse(reader));
+    assertThrows(InvalidGameFormatException.class, () -> gameService.calculate(reader));
   }
 }

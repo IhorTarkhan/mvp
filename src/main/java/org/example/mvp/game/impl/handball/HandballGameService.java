@@ -1,26 +1,37 @@
 package org.example.mvp.game.impl.handball;
 
+import java.util.List;
+import lombok.RequiredArgsConstructor;
 import org.example.mvp.game.Sport;
 import org.example.mvp.game.SportGameService;
+import org.example.mvp.game.bean.PlayerGameResult;
 import org.example.mvp.game.exception.InvalidGameFormatException;
-import org.example.mvp.game.impl.SportGameServiceTemplate;
+import org.example.mvp.game.impl.SportGameCalculator;
+import org.example.mvp.game.impl.SportGameParser;
+import org.example.mvp.game.impl.SportGameValidator;
 import org.springframework.stereotype.Service;
 
 @Service
-public class HandballGameService extends SportGameServiceTemplate<HandballPlayerStatisticBean>
-    implements SportGameService {
+@RequiredArgsConstructor
+public class HandballGameService implements SportGameService {
+  private final SportGameParser<HandballPlayerStatisticBean> sportGameParser;
+  private final SportGameValidator<HandballPlayerStatisticBean> sportGameValidator;
+  private final SportGameCalculator<HandballPlayerStatisticBean> sportGameCalculator;
+
   @Override
   public Sport getSport() {
     return Sport.HANDBALL;
   }
 
   @Override
-  protected Class<HandballPlayerStatisticBean> getBeanClass() {
-    return HandballPlayerStatisticBean.class;
+  public List<PlayerGameResult> calculate(String content) {
+    var game = sportGameParser.getPlayersStatistic(HandballPlayerStatisticBean.class, content);
+    sportGameValidator.validate(game, this::validateBean);
+    var winnerTeam = sportGameCalculator.getWinnerTeam(game, this::getTeamRatingScore);
+    return sportGameCalculator.getPlayersGameResult(game, winnerTeam, this::getPayerRatingScore);
   }
 
-  protected void validateBean(HandballPlayerStatisticBean bean) {
-    super.validateBean(bean);
+  private void validateBean(HandballPlayerStatisticBean bean) {
     if (bean.getGoalsMade() == null) {
       throw new InvalidGameFormatException("Player goalsMade must be set");
     }
@@ -29,13 +40,11 @@ public class HandballGameService extends SportGameServiceTemplate<HandballPlayer
     }
   }
 
-  @Override
-  protected Long getPayerRatingScore(HandballPlayerStatisticBean bean) {
-    return bean.getGoalsMade() * 2 - bean.getGoalsReceived();
+  private Long getTeamRatingScore(HandballPlayerStatisticBean bean) {
+    return bean.getGoalsMade();
   }
 
-  @Override
-  protected Long getTeamRatingScore(HandballPlayerStatisticBean bean) {
-    return bean.getGoalsMade();
+  private Long getPayerRatingScore(HandballPlayerStatisticBean bean) {
+    return bean.getGoalsMade() * 2 - bean.getGoalsReceived();
   }
 }
