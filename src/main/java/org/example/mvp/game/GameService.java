@@ -20,7 +20,7 @@ public class GameService {
     return sportGameService.calculate(splitContent[1]);
   }
 
-  private static Sport getSport(String content) {
+  private Sport getSport(String content) {
     try {
       return Sport.valueOf(content);
     } catch (IllegalArgumentException e) {
