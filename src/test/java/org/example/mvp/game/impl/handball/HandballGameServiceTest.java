@@ -1,23 +1,34 @@
 package org.example.mvp.game.impl.handball;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 import org.example.mvp.game.Sport;
-import org.example.mvp.game.bean.PlayerGameResult;
 import org.example.mvp.game.exception.InvalidGameFormatException;
+import org.example.mvp.game.impl.SportGameCalculator;
+import org.example.mvp.game.impl.SportGameParser;
+import org.example.mvp.game.impl.SportGameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class HandballGameServiceTest {
-  @InjectMocks HandballGameService handballGameService;
+  @Mock SportGameParser<HandballPlayerStatisticBean> sportGameParser;
+  @Mock SportGameValidator<HandballPlayerStatisticBean> sportGameValidator;
+  @Mock SportGameCalculator<HandballPlayerStatisticBean> sportGameCalculator;
+  @InjectMocks
+  HandballGameService handballGameService;
 
   @BeforeEach
   void setUp() {}
@@ -28,53 +39,79 @@ class HandballGameServiceTest {
   }
 
   @Test
-  void calculate_positive_worksCorrectly() throws IOException {
-    var path = Path.of("src/test/resources/set/handball/correct_game_1.csv");
-    List<PlayerGameResult> actualResult;
-    List<PlayerGameResult> expectedResult =
-        List.of(
-//            new PlayerGameResult("nick1", "player 1", 4L, -20L, true),
-//            new PlayerGameResult("nick2", "player 2", 8L, 10L, true),
-//            new PlayerGameResult("nick3", "player 3", 15L, 0L, true),
-//            new PlayerGameResult("nick4", "player 4", 16L, -23L, false),
-//            new PlayerGameResult("nick5", "player 5", 23L, -1L, false),
-//            new PlayerGameResult("nick6", "player 6", 42L, -9L, false)
-        );
+  void calculate_anyString_callServices() {
+    String content = "anyString";
+    List<HandballPlayerStatisticBean> game = List.of();
 
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      actualResult = handballGameService.calculate("reader");
-    }
+    when(sportGameParser.getPlayersStatistic(HandballPlayerStatisticBean.class, content))
+        .thenReturn(game);
 
-    assertEquals(expectedResult, actualResult);
+    handballGameService.calculate(content);
+
+    verify(sportGameParser, times(1))
+        .getPlayersStatistic(HandballPlayerStatisticBean.class, content);
+    verify(sportGameValidator, times(1)).validate(eq(game), any());
+    verify(sportGameCalculator, times(1)).getWinnerTeam(eq(game), any());
+    verify(sportGameCalculator, times(1)).getPlayersGameResult(eq(game), any(), any());
   }
 
   @Test
-  void calculate_invalidFormat_throwException() throws IOException {
-    Path path;
+  void calculate_correctValidation() {
+    String content = "anyString";
 
-    path = Path.of("src/test/resources/set/handball/invalid_game_format_1.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(InvalidGameFormatException.class, () -> handballGameService.calculate("reader"));
-    }
+    doAnswer(
+            invocation -> {
+              Consumer<HandballPlayerStatisticBean> consumer = invocation.getArgument(1);
+              List<HandballPlayerStatisticBean> argument = invocation.getArgument(0);
+              argument.forEach(consumer);
+              return null;
+            })
+            .when(sportGameValidator)
+            .validate(anyList(), any());
 
-    path = Path.of("src/test/resources/set/handball/invalid_game_format_2.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(InvalidGameFormatException.class, () -> handballGameService.calculate("reader"));
-    }
+    List<HandballPlayerStatisticBean> game =
+        List.of(
+            new HandballPlayerStatisticBean("player 1", "nick1", 1L, "team 1", 10L, 20L));
 
-    path = Path.of("src/test/resources/set/handball/invalid_game_format_3.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(InvalidGameFormatException.class, () -> handballGameService.calculate("reader"));
-    }
+    when(sportGameParser.getPlayersStatistic(HandballPlayerStatisticBean.class, content))
+        .thenReturn(game);
 
-    path = Path.of("src/test/resources/set/handball/invalid_game_format_4.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(InvalidGameFormatException.class, () -> handballGameService.calculate("reader"));
-    }
+    assertDoesNotThrow(() -> handballGameService.calculate(content));
+  }
+
+  @Test
+  void calculate_wrongValidation() {
+    String content = "anyString";
+    List<HandballPlayerStatisticBean> game;
+    InvalidGameFormatException exception;
+    doAnswer(
+            invocation -> {
+              Consumer<HandballPlayerStatisticBean> consumer = invocation.getArgument(1);
+              List<HandballPlayerStatisticBean> argument = invocation.getArgument(0);
+              argument.forEach(consumer);
+              return null;
+            })
+        .when(sportGameValidator)
+        .validate(anyList(), any());
+
+    game =
+        List.of(
+            new HandballPlayerStatisticBean("player 1", "nick1", 1L, "team 1", null, 20L));
+    when(sportGameParser.getPlayersStatistic(HandballPlayerStatisticBean.class, content))
+        .thenReturn(game);
+    exception =
+        assertThrowsExactly(
+            InvalidGameFormatException.class, () -> handballGameService.calculate(content));
+    assertEquals("Player goalsMade must be set", exception.getMessage());
+
+    game =
+        List.of(
+            new HandballPlayerStatisticBean("player 1", "nick1", 1L, "team 1", 10L, null));
+    when(sportGameParser.getPlayersStatistic(HandballPlayerStatisticBean.class, content))
+        .thenReturn(game);
+    exception =
+        assertThrowsExactly(
+            InvalidGameFormatException.class, () -> handballGameService.calculate(content));
+    assertEquals("Player goalsReceived must be set", exception.getMessage());
   }
 }

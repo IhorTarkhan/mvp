@@ -1,91 +1,126 @@
 package org.example.mvp.game.impl.basketball;
 
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doAnswer;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.List;
+import java.util.function.Consumer;
 import org.example.mvp.game.Sport;
-import org.example.mvp.game.bean.PlayerGameResult;
 import org.example.mvp.game.exception.InvalidGameFormatException;
+import org.example.mvp.game.impl.SportGameCalculator;
+import org.example.mvp.game.impl.SportGameParser;
+import org.example.mvp.game.impl.SportGameValidator;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoSettings;
 
 @MockitoSettings
 class BasketballGameServiceTest {
-  @InjectMocks BasketballGameService basketballResultCalculator;
+  @Mock SportGameParser<BasketballPlayerStatisticBean> sportGameParser;
+  @Mock SportGameValidator<BasketballPlayerStatisticBean> sportGameValidator;
+  @Mock SportGameCalculator<BasketballPlayerStatisticBean> sportGameCalculator;
+  @InjectMocks BasketballGameService basketballGameService;
 
   @BeforeEach
   void setUp() {}
 
   @Test
   void getSport_returnBasketball() {
-    assertEquals(Sport.BASKETBALL, basketballResultCalculator.getSport());
+    assertEquals(Sport.BASKETBALL, basketballGameService.getSport());
   }
 
   @Test
-  void calculate_positive_worksCorrectly() throws IOException {
-    var path = Path.of("src/test/resources/set/basketball/correct_game_1.csv");
-    List<PlayerGameResult> actualResult;
-    List<PlayerGameResult> expectedResult =
+  void calculate_anyString_callServices() {
+    String content = "anyString";
+    List<BasketballPlayerStatisticBean> game = List.of();
+
+    when(sportGameParser.getPlayersStatistic(BasketballPlayerStatisticBean.class, content))
+        .thenReturn(game);
+
+    basketballGameService.calculate(content);
+
+    verify(sportGameParser, times(1))
+        .getPlayersStatistic(BasketballPlayerStatisticBean.class, content);
+    verify(sportGameValidator, times(1)).validate(eq(game), any());
+    verify(sportGameCalculator, times(1)).getWinnerTeam(eq(game), any());
+    verify(sportGameCalculator, times(1)).getPlayersGameResult(eq(game), any(), any());
+  }
+
+  @Test
+  void calculate_correctValidation() {
+    String content = "anyString";
+
+    doAnswer(
+            invocation -> {
+              Consumer<BasketballPlayerStatisticBean> consumer = invocation.getArgument(1);
+              List<BasketballPlayerStatisticBean> argument = invocation.getArgument(0);
+              argument.forEach(consumer);
+              return null;
+            })
+            .when(sportGameValidator)
+            .validate(anyList(), any());
+
+    List<BasketballPlayerStatisticBean> game =
         List.of(
-//            new PlayerGameResult("nick1", "player 1", 4L, 29L, false),
-//            new PlayerGameResult("nick2", "player 2", 8L, 10L, false),
-//            new PlayerGameResult("nick3", "player 3", 15L, 44L, false),
-//            new PlayerGameResult("nick4", "player 4", 16L, 40L, true),
-//            new PlayerGameResult("nick5", "player 5", 23L, 22L, true),
-//            new PlayerGameResult("nick6", "player 6", 42L, 26L, true)
-        );
+            new BasketballPlayerStatisticBean("player 1", "nick1", 1L, "team 1", 10L, 20L, 30L));
 
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      actualResult = basketballResultCalculator.calculate("reader");
-    }
+    when(sportGameParser.getPlayersStatistic(BasketballPlayerStatisticBean.class, content))
+        .thenReturn(game);
 
-    assertEquals(expectedResult, actualResult);
+    assertDoesNotThrow(() -> basketballGameService.calculate(content));
   }
 
   @Test
-  void calculate_invalidFormat_throwException() throws IOException {
-    Path path;
+  void calculate_wrongValidation() {
+    String content = "anyString";
+    List<BasketballPlayerStatisticBean> game;
+    InvalidGameFormatException exception;
+    doAnswer(
+            invocation -> {
+              Consumer<BasketballPlayerStatisticBean> consumer = invocation.getArgument(1);
+              List<BasketballPlayerStatisticBean> argument = invocation.getArgument(0);
+              argument.forEach(consumer);
+              return null;
+            })
+        .when(sportGameValidator)
+        .validate(anyList(), any());
 
-    path = Path.of("src/test/resources/set/basketball/invalid_game_format_1.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate("reader"));
-    }
+    game =
+        List.of(
+            new BasketballPlayerStatisticBean("player 1", "nick1", 1L, "team 1", null, 20L, 30L));
+    when(sportGameParser.getPlayersStatistic(BasketballPlayerStatisticBean.class, content))
+        .thenReturn(game);
+    exception =
+        assertThrowsExactly(
+            InvalidGameFormatException.class, () -> basketballGameService.calculate(content));
+    assertEquals("Player scoredPoints must be set", exception.getMessage());
 
-    path = Path.of("src/test/resources/set/basketball/invalid_game_format_2.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate("reader"));
-    }
+    game =
+        List.of(
+            new BasketballPlayerStatisticBean("player 1", "nick1", 1L, "team 1", 10L, null, 30L));
+    when(sportGameParser.getPlayersStatistic(BasketballPlayerStatisticBean.class, content))
+        .thenReturn(game);
+    exception =
+        assertThrowsExactly(
+            InvalidGameFormatException.class, () -> basketballGameService.calculate(content));
+    assertEquals("Player rebounds must be set", exception.getMessage());
 
-    path = Path.of("src/test/resources/set/basketball/invalid_game_format_3.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate("reader"));
-    }
-
-    path = Path.of("src/test/resources/set/basketball/invalid_game_format_4.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate("reader"));
-    }
-
-    path = Path.of("src/test/resources/set/basketball/invalid_game_format_5.csv");
-    try (BufferedReader reader = Files.newBufferedReader(path)) {
-      reader.readLine();
-      assertThrows(
-          InvalidGameFormatException.class, () -> basketballResultCalculator.calculate("reader"));
-    }
+    game =
+        List.of(
+            new BasketballPlayerStatisticBean("player 1", "nick1", 1L, "team 1", 10L, 20L, null));
+    when(sportGameParser.getPlayersStatistic(BasketballPlayerStatisticBean.class, content))
+        .thenReturn(game);
+    exception =
+        assertThrowsExactly(
+            InvalidGameFormatException.class, () -> basketballGameService.calculate(content));
+    assertEquals("Player assists must be set", exception.getMessage());
   }
 }
