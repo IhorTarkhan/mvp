@@ -3,9 +3,11 @@ package org.example.mvp.game.impl.basketball;
 import com.opencsv.bean.CsvBindByPosition;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.example.mvp.game.impl.PlayerStatisticBean;
 
 @Data
+@NoArgsConstructor
 @AllArgsConstructor
 public class BasketballPlayerStatisticBean implements PlayerStatisticBean {
   @CsvBindByPosition(position = 0)

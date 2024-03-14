@@ -33,7 +33,11 @@ public class MvpRunner implements ApplicationRunner {
         contents.stream().flatMap(content -> gameService.calculate(content).stream()).toList();
     PlayerScoreResult mvpPlayer = mvpService.getMvp(playerGamesResults);
 
-    log.info("MVP player is: " + mvpPlayer);
+    log.info(
+        "MVP player is: \"{} ({})\" with \"{}\" points!",
+        mvpPlayer.getName(),
+        mvpPlayer.getNickname(),
+        mvpPlayer.getScore());
   }
 
   private List<String> readFilesContent(String setFolder) {
