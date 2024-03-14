@@ -31,11 +31,11 @@ public class SportGameValidator<Bean extends PlayerStatisticBean> {
   }
 
   private void validateBean(Bean bean, Consumer<Bean> typeSpecificValidation) {
-    if (bean.getNickname() == null) {
-      throw new InvalidGameFormatException("Player nickname must be set");
-    }
     if (bean.getPlayerName() == null) {
       throw new InvalidGameFormatException("Player name must be set");
+    }
+    if (bean.getNickname() == null) {
+      throw new InvalidGameFormatException("Player nickname must be set");
     }
     if (bean.getNumber() == null) {
       throw new InvalidGameFormatException("Player number must be set");

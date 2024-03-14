@@ -1,11 +1,14 @@
-package org.example.mvp.game.impl.basketball;
+package org.example.mvp.game.impl;
 
 import com.opencsv.bean.CsvBindByPosition;
+import lombok.AllArgsConstructor;
 import lombok.Data;
-import org.example.mvp.game.impl.PlayerStatisticBean;
+import lombok.NoArgsConstructor;
 
 @Data
-public class BasketballPlayerStatisticBean implements PlayerStatisticBean {
+@NoArgsConstructor
+@AllArgsConstructor
+public class PlayerStatisticBeanTestImpl implements PlayerStatisticBean {
   @CsvBindByPosition(position = 0)
   private String playerName;
 
@@ -19,11 +22,8 @@ public class BasketballPlayerStatisticBean implements PlayerStatisticBean {
   private String teamName;
 
   @CsvBindByPosition(position = 4)
-  private Long scoredPoints;
+  private Long teamRatingScore;
 
   @CsvBindByPosition(position = 5)
-  private Long rebounds;
-
-  @CsvBindByPosition(position = 6)
-  private Long assists;
+  private Long payerRatingScore;
 }
