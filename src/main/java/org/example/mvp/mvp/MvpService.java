@@ -22,7 +22,7 @@ public class MvpService {
     return Collections.max(scoresByNickname.values(), this::compareScore);
   }
 
-  public PlayerScoreResult getScore(PlayerGameResult gameResult) {
+  private PlayerScoreResult getScore(PlayerGameResult gameResult) {
     return PlayerScoreResult.builder()
         .nickname(gameResult.getNickname())
         .name(gameResult.getName())
@@ -30,7 +30,7 @@ public class MvpService {
         .build();
   }
 
-  public PlayerScoreResult sumScore(PlayerScoreResult a, PlayerScoreResult b) {
+  private PlayerScoreResult sumScore(PlayerScoreResult a, PlayerScoreResult b) {
     if (!a.getName().equals(b.getName())) {
       throw new InvalidGameSetException("Player name must be the same");
     }
@@ -42,7 +42,7 @@ public class MvpService {
         .build();
   }
 
-  public int compareScore(PlayerScoreResult a, PlayerScoreResult b) {
+  private int compareScore(PlayerScoreResult a, PlayerScoreResult b) {
     return a.getScore().compareTo(b.getScore());
   }
 }
